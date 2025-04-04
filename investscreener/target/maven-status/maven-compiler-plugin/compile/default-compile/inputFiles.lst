@@ -1,0 +1,11 @@
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/InvestscreenerApplication.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/config/SecurityConfig.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/controller/HelloController.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/controller/StudentController.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/controller/UserController.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/model/Student.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/model/UserPrincipal.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/model/Users.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/repo/UserRepo.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/service/MyUserDetailsService.java
+/Users/marianegri/Downloads/investscreener/src/main/java/com/investscreener/investscreener/service/UserService.java
