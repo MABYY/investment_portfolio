@@ -1,2 +1,2 @@
-# investment_portfolio
+# Investment Tracker
 Track your investments
