@@ -1,8 +1,8 @@
 package com.investscreener.investscreener.service;
 
-import com.investscreener.investscreener.model.Users;
-import com.investscreener.investscreener.model.UserPrincipal;
-import com.investscreener.investscreener.repo.UsersRepo;
+import com.investscreener.investscreener.entities.Users;
+import com.investscreener.investscreener.entities.UserPrincipal;
+import com.investscreener.investscreener.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UsersRepo userRepo;
+    private UsersRepository userRepo;
 
 
     @Override

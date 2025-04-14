@@ -1,6 +1,7 @@
 package com.investscreener.investscreener.controller;
 
-import com.investscreener.investscreener.model.Users;
+import com.investscreener.investscreener.entities.Users;
+import com.investscreener.investscreener.repositories.UsersRepository;
 import com.investscreener.investscreener.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,11 +9,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class UsersController {
     @Autowired
     private UsersService usersService;
+    @Autowired
+    private UsersRepository usersRepository;
 
 
     @PostMapping("/register")
@@ -27,6 +31,12 @@ public class UsersController {
         Map<String, String> response = new HashMap<String, String>();
         response.put("token", usersService.verify(user));
         return ResponseEntity.ok(response);
+    };
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<Optional<Users>> findUserData  (@PathVariable(value = "userId") Long userId) {
+
+        return ResponseEntity.ok(usersRepository.findById(userId));
     };
 
 }

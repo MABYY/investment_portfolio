@@ -1,8 +1,8 @@
 package com.investscreener.investscreener.service;
 
-import com.investscreener.investscreener.model.Portfolio;
-import com.investscreener.investscreener.model.Users;
-import com.investscreener.investscreener.repo.UsersRepo;
+import com.investscreener.investscreener.entities.Portfolio;
+import com.investscreener.investscreener.entities.Users;
+import com.investscreener.investscreener.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public class UsersService {
     @Autowired
-    private UsersRepo repo;
+    private UsersRepository usersRepository;
 
     @Autowired
     private JWTService jwtService;
@@ -27,7 +27,7 @@ public class UsersService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     public Users register(Users user) {
         user.setPassword(encoder.encode(user.getPassword()));
-        repo.save(user);
+        usersRepository.save(user);
         return user;
     }
 
@@ -59,11 +59,11 @@ public class UsersService {
         listOfUserPortfolios.add(portfolio);
 
         user.setPortfolios(listOfUserPortfolios);
-        repo.save(user);
+        usersRepository.save(user);
 
     }
 
     public Users getUserByID(Long id) {
-        return repo.getReferenceById(id);
+        return  usersRepository.getReferenceById(id);
     }
 }

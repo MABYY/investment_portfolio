@@ -2,15 +2,17 @@ package com.investscreener.investscreener.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.investscreener.investscreener.controller.PublicView.PublicView;
-import com.investscreener.investscreener.model.Asset;
-import com.investscreener.investscreener.model.dtos.RequestAssetNameDTO;
-import com.investscreener.investscreener.model.dtos.RequestAssetTickerDTO;
+import com.investscreener.investscreener.entities.Asset;
+import com.investscreener.investscreener.entities.dtos.RequestAssetNameDTO;
+import com.investscreener.investscreener.entities.dtos.RequestAssetTickerDTO;
+import com.investscreener.investscreener.entities.dtos.RequestByIdDTO;
 import com.investscreener.investscreener.service.AssetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/assets")
@@ -20,6 +22,7 @@ public class AssetController {
     private AssetService assetService;
 
 
+    @JsonView(PublicView.class)
     @GetMapping()
     public ResponseEntity<List<Asset> > getAssets() {
         return ResponseEntity.ok(assetService.getAllAssets());
@@ -28,6 +31,7 @@ public class AssetController {
     @JsonView(PublicView.class)
     @PostMapping("/add")
     public ResponseEntity<Asset> addNewAsset(@RequestBody Asset asset) {
+        assetService.saveAsset(asset);
         return ResponseEntity.ok(asset);
     }
 
@@ -38,19 +42,20 @@ public class AssetController {
     };
 
     @JsonView(PublicView.class)
+    @GetMapping("/findbyId")
+    public ResponseEntity<Asset>  getAssetByTicker(@RequestBody RequestByIdDTO data) {
+        return ResponseEntity.ok(assetService.getAssetById(data.getId()));
+    }
+
+    @JsonView(PublicView.class)
     @GetMapping("/findbyticker")
     public ResponseEntity<Asset>  getAssetByTicker(@RequestBody RequestAssetTickerDTO ticker) {
         return ResponseEntity.ok(assetService.findAssetByTicker(ticker.getTicker()));
     };
 
-    @PutMapping("/detetebyname")
-    public ResponseEntity<Long> deleteAssetByName(@RequestBody RequestAssetNameDTO name) {
-        return ResponseEntity.ok(assetService.deleteAssetByName(name.getName()));
-    };
-
-    @PutMapping("/deletebyticker")
-    public ResponseEntity<Long>  deleteAssetByTicker(@RequestBody RequestAssetTickerDTO ticker) {
-        return ResponseEntity.ok(assetService.deleteAssetByTicker(ticker.getTicker()));
+    @DeleteMapping()
+    public void deleteAssetById(@RequestBody RequestByIdDTO request) {
+        assetService.deleteAssetById(request.getId());
     };
 
 

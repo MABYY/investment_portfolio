@@ -1,20 +1,21 @@
 package com.investscreener.investscreener.controller;
 
-import com.investscreener.investscreener.model.Asset;
-import com.investscreener.investscreener.model.Portfolio;
-import com.investscreener.investscreener.model.Users;
-import com.investscreener.investscreener.model.dtos.PortfolioDTO;
-import com.investscreener.investscreener.repo.PortfolioRepo;
-import com.investscreener.investscreener.repo.UsersRepo;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.investscreener.investscreener.controller.PublicView.PublicView;
+import com.investscreener.investscreener.entities.Asset;
+import com.investscreener.investscreener.entities.Portfolio;
+import com.investscreener.investscreener.entities.Users;
+import com.investscreener.investscreener.entities.dtos.PortfolioDTO;
+import com.investscreener.investscreener.entities.dtos.RequestByIdDTO;
+import com.investscreener.investscreener.repositories.PortfolioRepository;
 import com.investscreener.investscreener.service.AssetService;
 import com.investscreener.investscreener.service.PortfolioService;
 import com.investscreener.investscreener.service.UsersService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -33,13 +34,13 @@ public class PortfolioController {
     private UsersService userService ;
 
     @Autowired
-    private PortfolioRepo portfolioRepository ;
+    private PortfolioRepository portfolioRepository ;
 
 
     public PortfolioDTO convertPortfolioToDTO(Portfolio portfolio){
         PortfolioDTO portfolioDTO = new PortfolioDTO();
         Long userID = portfolio.getUsers().getId();
-        List<String> assetIdsList = portfolio.getAssetTickers();
+        List<String> assetIdsList = portfolio.getAssets().stream().map(a->a.getTicker()).toList();
 
         //Adds the asset Ids to the PortfolioPTO instance
         portfolioDTO.setAssetTickers(assetIdsList);
@@ -60,57 +61,46 @@ public class PortfolioController {
                 .toList();
 
         portfolio.setUsers(user);
-//        portfolio.setAssetsId(assetList);
+        portfolio.setAssets(new HashSet<>(assetList));
+        portfolio.setPortfolioName(portfolioDTO.getPortfolioName());
         return portfolio;
     }
 
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<PortfolioDTO> createPortfolio(@PathVariable(value = "userId") Long userId,
-                                          @RequestBody Portfolio portfolioRequest) {
-
-        Users user = userService.getUserByID(userId);
-        portfolioRequest.setUsers(user);
-        return ResponseEntity.ok(
-                        convertPortfolioToDTO(portfolioRepository.save(portfolioRequest))
-                );
+    @JsonView(PublicView.class)
+    @PostMapping()
+    public ResponseEntity<Portfolio> createPortfolio(@RequestBody PortfolioDTO portfolioRequest) {
+        Portfolio newPortfolio = convertDTOToPortfolio(portfolioRequest);
+        portfolioRepository.save(newPortfolio);
+        return ResponseEntity.ok(newPortfolio);
     }
 
+
+    @JsonView(PublicView.class)
     @GetMapping()
-    public ResponseEntity<PortfolioDTO> getPortfolio(@RequestBody Long id) {
-       Portfolio portfolio = portfolioService.getPortfolioByID(id);
-       return ResponseEntity.ok(convertPortfolioToDTO(portfolio));
+    public ResponseEntity<Portfolio> getPortfolio(@RequestBody RequestByIdDTO data) {
+       return ResponseEntity.ok(portfolioService.getPortfolioByID(data.getId()));
     }
 
+    @JsonView(PublicView.class)
     @GetMapping("/userportfolios")
-    public ResponseEntity<List<PortfolioDTO>> getPortfoliosByUser(@RequestBody Long userID) {
-        System.out.println("userID !!!!!! " + userID);
-        List<Portfolio> listOfPortfolioByUserID = portfolioService.getPortfoliosByUserID(userID);
-
-        return ResponseEntity.ok(
-                listOfPortfolioByUserID.stream()
-                        .map(this::convertPortfolioToDTO)
-                        .collect(toList())
-        );
+    public ResponseEntity<List<Portfolio>> getPortfoliosByUser(@RequestBody RequestByIdDTO data) {
+        List<Portfolio> listOfPortfolioByUserID = portfolioService.getAllPortfoliosByUserID(data.getId());
+        return ResponseEntity.ok(listOfPortfolioByUserID);
     }
 
+    @JsonView(PublicView.class)
+    @PutMapping()
+    public  ResponseEntity<Portfolio>  updatePortfolio(@RequestBody PortfolioDTO portfolioDTO) {
+        Portfolio portfolio = convertDTOToPortfolio(portfolioDTO);
+        return ResponseEntity.ok(portfolio);
+    };
 
-//    @PutMapping()
-//    public Long updatePortfolio(@RequestBody PortfolioDTO portfolioDTO) {
-//        Portfolio portfolio = convertDTOToPortfolio(portfolioDTO);
-//        Users user = userService.getUserByID(portfolioDTO.getUserID());
-
-//        portfolio.setUsers(portEdit.getUsers());
-//        portfolio.setAssets(portEdit.getAssets());
-
-//        return portfolio.getId();
-//    };
-
-
-
-
-
-
+    @DeleteMapping()
+    public ResponseEntity<Long>   deletePortfolioById(@RequestBody RequestByIdDTO data) {
+        Portfolio portfolio =  portfolioService.deletePortfolio(data.getId());
+        return ResponseEntity.ok(portfolio.getId());
+    };
 
 
 }
